@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">MZ ARK MOBILE logo</title>
+  <defs>
+    <radialGradient id="shade" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#172414"/><stop offset=".72" stop-color="#050906"/><stop offset="1" stop-color="#000"/></radialGradient>
+    <linearGradient id="lime" x1=".1" y1=".1" x2=".9" y2=".9"><stop stop-color="#e4ff39"/><stop offset=".45" stop-color="#73ff00"/><stop offset="1" stop-color="#1c7d09"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <circle cx="256" cy="256" r="239" fill="url(#shade)" stroke="url(#lime)" stroke-width="8"/>
+  <path d="M74 155 Q255 43 438 155 Q361 135 319 194 Q287 149 256 148 Q217 148 193 194 Q148 135 74 155Z" fill="#030603" stroke="#69ff00" stroke-width="5"/>
+  <path d="M133 143 Q256 82 379 143 Q318 135 288 181 Q257 152 225 181 Q195 135 133 143Z" fill="#9cff19" opacity=".9" filter="url(#glow)"/>
+  <ellipse cx="256" cy="143" rx="25" ry="41" fill="#050805" stroke="#ddff38" stroke-width="6"/>
+  <ellipse cx="256" cy="143" rx="8" ry="27" fill="#b5ff00"/>
+  <path d="M63 348 120 207 190 288 256 198 322 288 392 207 449 348 397 320 366 278 326 377 256 311 186 377 146 278 115 320Z" fill="#080c08" stroke="url(#lime)" stroke-width="8" stroke-linejoin="miter"/>
+  <path d="M107 340 152 239 191 300 256 215 321 300 360 239 405 340 369 307 326 394 256 329 186 394 143 307Z" fill="none" stroke="#d7ff32" stroke-width="3" opacity=".9"/>
+  <path d="M46 177 89 139M75 115l38-32M430 120l34 30M409 78l34 35M94 411l31-31M398 419l-29-31" stroke="#72ff00" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
+</svg>
