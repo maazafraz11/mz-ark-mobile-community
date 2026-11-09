@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Sparkles, Swords, TrendingUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ServerCard } from "@/components/server-card";
-import { servers, featuredServer } from "@/lib/mock-data";
+import { featuredServer, servers } from "@/lib/mock-data";
 
 export default function HomePage() {
   return (
@@ -16,11 +16,13 @@ export default function HomePage() {
               Discover the best MZ ARK Mobile communities.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-slate-300">
-              A refined platform where players find trustworthy servers, owners manage listings, and communities thrive with polished discovery tools.
+              A refined platform where players find trustworthy servers, owners manage listings, and communities thrive.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Button asChild size="lg" className="bg-accent text-slate-950 hover:bg-accent/90">
-                <Link href="/servers">Browse Servers <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Link href="/servers">
+                  Browse Servers <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link href="/owners/dashboard">Owner Dashboard</Link>
@@ -61,7 +63,7 @@ export default function HomePage() {
                     <div className="text-sm uppercase tracking-[0.2em] text-slate-400">Rates</div>
                   </div>
                   <div className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent">
-                    {featuredServer.pvp ? "PvP" : "PvE"}
+                    {featuredServer.serverType === "PvP" ? "PvP" : "PvE"}
                   </div>
                 </div>
               </div>

@@ -1,0 +1,22 @@
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE servers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE server_owners ENABLE ROW LEVEL SECURITY;
+ALTER TABLE staff_memberships ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ownership_claims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE server_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE moderation_reports ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Profiles are viewable by owner" ON profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Profiles can update own record" ON profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Public server listing read access" ON servers FOR SELECT USING (status = 'approved');
+CREATE POLICY "Owners can manage own servers" ON servers FOR ALL USING (owner_id = auth.uid());
+CREATE POLICY "Server members see assigned server records" ON server_owners FOR SELECT USING (user_id = auth.uid() OR EXISTS (SELECT 1 FROM servers WHERE id = server_id AND owner_id = auth.uid()));
+CREATE POLICY "Staff can read scoped server relations" ON staff_memberships FOR SELECT USING (user_id = auth.uid());
+CREATE POLICY "Users can manage their own favorites and reviews" ON favorites FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Users can manage their own reviews" ON reviews FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Owners can publish announcements" ON announcements FOR ALL USING (EXISTS (SELECT 1 FROM servers s WHERE s.id = server_id AND s.owner_id = auth.uid()));
+CREATE POLICY "Moderators can access reports" ON moderation_reports FOR ALL USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role IN ('moderator','platform_admin')));
