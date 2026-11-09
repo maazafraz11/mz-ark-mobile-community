@@ -1,0 +1,13 @@
+"use client";
+import { useEffect,useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+
+type Item={id:string;name:string;status:string;created_at:string};
+export function AdminQueue(){const [items,setItems]=useState<Item[]>([]);const [loading,setLoading]=useState(true);const [error,setError]=useState("");
+ async function load(){const supabase=createClient();if(!supabase){setError("Supabase is not configured.");setLoading(false);return;}const {data,error}=await supabase.from("servers").select("id,name,status,created_at").in("status",["pending","approved","rejected"]).order("created_at",{ascending:false}).limit(100);if(error)setError(error.message);else setItems(data??[]);setLoading(false);}
+ useEffect(()=>{void load();},[]);
+ async function moderate(id:string,status:"approved"|"rejected"){const supabase=createClient();if(!supabase)return;const {error}=await supabase.from("servers").update({status}).eq("id",id);if(error)setError(error.message);else await load();}
+ async function setFeatured(id:string,featured:boolean){const supabase=createClient();if(!supabase)return;const {error}=await supabase.from("servers").update({featured}).eq("id",id);if(error)setError(error.message);else await load();}
+ return <div className="panel overflow-hidden"><div className="border-b border-white/10 p-5"><h2 className="text-xl font-bold">Listing moderation</h2><p className="mt-1 text-sm">Approval and featured changes are protected by database authorization.</p></div>{error&&<p role="alert" className="p-4 text-sm text-red-300">{error}</p>}{loading?<div className="p-6">Loading moderation queue…</div>:items.length===0?<div className="p-6 text-slate-300">No listings are available to review.</div>:<div className="divide-y divide-white/10">{items.map(item=><div key={item.id} className="flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between"><div><div className="font-semibold text-white">{item.name}</div><div className="text-sm capitalize text-slate-400">{item.status}</div></div><div className="flex flex-wrap gap-2">{item.status!=="approved"&&<Button size="sm" onClick={()=>void moderate(item.id,"approved")}>Approve</Button>}{item.status!=="rejected"&&<Button size="sm" variant="outline" onClick={()=>void moderate(item.id,"rejected")}>Reject</Button>}{item.status==="approved"&&<Button size="sm" variant="outline" onClick={()=>void setFeatured(item.id,true)}>Feature</Button>}{item.status==="approved"&&<Button size="sm" variant="ghost" onClick={()=>void setFeatured(item.id,false)}>Unfeature</Button>}</div></div>)}</div>}</div>;
+}

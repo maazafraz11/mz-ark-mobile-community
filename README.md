@@ -1,46 +1,26 @@
 # MZ ARK MOBILE Community Platform
 
-Next.js 14 + TypeScript community platform for original ARK Mobile players and server owners. The public design keeps the MZ ARK MOBILE identity and “THE LEGACY NEVER DIES” slogan.
+Next.js 14 + TypeScript community platform for original ARK Mobile players and server owners.
 
-## Configure Supabase
+## Local setup
+1. `npm install`
+2. Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SUPABASE_URL` plus `NEXT_PUBLIC_SUPABASE_ANON_KEY` to your Supabase project URL and **publishable** key.
+3. Run `supabase/schema.sql` in the Supabase SQL Editor.
+4. Configure Supabase Auth email/password, SMTP, and redirect URLs (`http://localhost:3000/auth/callback`).
+5. Run `npm run dev`.
 
-1. Create a Supabase project and open **Project Settings → API Keys**.
-2. Copy the project URL and publishable key (`sb_publishable_...`). The publishable/anon key is intended for browser use; never expose a `service_role` or secret key.
-3. Copy `.env.example` to `.env.local` and set:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_PUBLISHABLE_KEY
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
-4. Run `supabase/schema.sql` in the Supabase SQL Editor. It creates the tables, indexes, profile signup trigger, RLS policies, and private asset bucket.
-5. In **Authentication → URL Configuration**, set the site URL and add `http://localhost:3000/**` plus your deployed origin to redirect URLs. Enable email/password and configure SMTP for production verification and reset emails.
-6. Install and run:
-   ```bash
-   npm install
-   npm run dev
-   ```
+The publishable key is meant for client use. Never add a service-role/secret key to this repository or any `NEXT_PUBLIC_*` variable. The credentials shared in chat have not been committed; use local/deployment environment settings.
 
-No project key is stored in this repository. Add deployment variables in your hosting provider’s environment settings.
+## Implemented routes
+Public: `/`, `/servers`, `/servers/[id]`, `/shop`, `/about`, `/support`.
+Auth: `/auth/register`, `/auth/login`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/callback`.
+Owner: `/owners/setup`, `/owners/dashboard`.
+Admin: `/admin`.
 
-## Routes
+Server directory and moderation queue read live Supabase data; server onboarding inserts draft or pending listings. Email verification and password reset use Supabase Auth. Middleware verifies sessions for protected pages, and database RLS is the data authorization boundary. Admin approval/feature changes are additionally restricted by SQL policies and trigger checks. The public listing UI deliberately does not claim live server health or player counts.
 
-- `/`, `/servers`, `/servers/[id]`: public home, search/discovery and server profile.
-- `/shop`, `/about`, `/support`: public information pages.
-- `/auth/register`, `/auth/login`, `/auth/forgot-password`, `/auth/reset-password`: account flows.
-- `/owners/setup`, `/owners/dashboard`: owner onboarding and management.
-- `/admin`: platform-admin area; role checks are enforced in middleware and RLS.
-- `/setup`: configuration guidance when credentials are absent.
+## Database and security notes
+Apply `supabase/schema.sql`. It includes profiles, servers, owner/staff relationships, claims, images, reviews, favorites, announcements, analytics events, reports, indexes, a signup trigger, RLS policies and a private image bucket. Only trusted operators should grant `moderator` or `platform_admin` roles. RLS and policies are mandatory; do not disable them. Review your deployment and auth settings before public launch.
 
-## Roles and security
-
-Signup only accepts player or server-owner account types; the database trigger assigns roles. Moderator and platform-admin roles must be granted by a trusted administrator in the database. RLS is the authorization boundary for data operations. Owners may create draft/pending listings; only platform admins can approve or feature listings. Do not put a Supabase service-role key in the browser or `NEXT_PUBLIC_*` variables.
-
-The `server-assets` bucket is private and its SQL policies expect storage object paths to begin with the server UUID, for example `<server-uuid>/banner.webp`.
-
-## Tests and deployment
-
-Run `npm run lint` and `npm run build` before deployment. Deploy the Next.js app to Vercel or another Node-compatible host, set the three environment variables above, and add its URL to Supabase Auth redirect URLs. Configure a production SMTP provider and review moderation/storage policies before opening registration.
-
-## Data integrity
-
-Directory records and analytics must come from Supabase; the codebase's `lib/mock-data.ts` is legacy illustrative data only and must not be used as live platform metrics. No player counts, server health, or purchases are represented as live integrations.
+## Verify / deploy
+`npm run lint` and `npm run build`. Deploy to Vercel or another Node-compatible host, configure the environment variables in the host, and add the production callback URL in Supabase Auth URL settings. No purchases are processed in the Shop; the page should be informational only until an approved checkout integration exists.

@@ -1,20 +1,2 @@
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "MZ ARK MOBILE | Setup",
-  description: "Supabase and local setup for the MZ ARK MOBILE platform.",
-};
-
-export default function SetupScreen() {
-  return (
-    <div className="page-shell">
-      <div className="panel p-8">
-        <div className="muted-label">Configuration required</div>
-        <h1 className="mt-2 text-4xl font-black text-white">Connect your Supabase project</h1>
-        <p className="mt-4 max-w-2xl text-slate-300">
-          Environment variables are not configured yet. Add your project URL and anon key in a .env.local file to enable authentication, storage and protected dashboard routes.
-        </p>
-      </div>
-    </div>
-  );
-}
+import { createClient } from "@/lib/supabase/server";
+export default async function SetupScreen(){const configured=Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL&&process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);let databaseReady=false;if(configured){const supabase=createClient();if(supabase){const {error}=await supabase.from("servers").select("id",{head:true,count:"exact"});databaseReady=!error;}}return <div className="page-shell"><div className="panel p-8"><div className="muted-label">Project setup</div><h1 className="mt-2 text-4xl font-black">{configured?"Supabase connection":"Connect Supabase"}</h1><p className="mt-4 max-w-2xl">{configured?databaseReady?"Supabase is reachable and the server table is available.":"Credentials are set, but the schema is not available yet. Run supabase/schema.sql in the Supabase SQL Editor.":"Copy .env.example to .env.local and add your project URL and publishable key. Never add a service-role key to browser environment variables."}</p><ol className="mt-6 list-decimal space-y-2 pl-5 text-sm text-slate-300"><li>Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.</li><li>Run supabase/schema.sql in the Supabase SQL Editor.</li><li>Enable email/password and configure verification/reset redirect URLs.</li><li>Restart the Next.js development server.</li></ol></div></div>;}
